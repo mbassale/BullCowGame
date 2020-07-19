@@ -12,5 +12,9 @@
 				"Engine"
 			]
 		}
+	],
+	"TargetPlatforms": [
+		"HTML5",
+		"WindowsNoEditor"
 	]
 }

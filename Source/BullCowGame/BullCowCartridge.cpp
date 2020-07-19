@@ -22,7 +22,7 @@ void UBullCowCartridge::SetupGame()
     PrintLine(TEXT("Guess the %i letters word!"), HiddenWord.Len());
     PrintLine(TEXT("You have %i Lives"), Lives);
     PrintLine(TEXT("Press WASD and your mouse to explore this level."));
-    PrintLine(TEXT("Press tab to activate terminal and type guesses."));
+    PrintLine(TEXT("Press enter to activate console and type guesses."));
 }
 
 
@@ -40,37 +40,59 @@ void UBullCowCartridge::OnInput(const FString& Input) // When the player hits en
     }
 }
 
-void UBullCowCartridge::ProcessGuess(FString Guess)
+void UBullCowCartridge::ProcessGuess(const FString& Guess)
 {
     if (Guess == HiddenWord)
     {
         PrintLine(TEXT("You have Won!"));
         EndGame();
+        return;
+    }
+
+    if (Guess.Len() != HiddenWord.Len())
+    {
+        PrintLine(TEXT("The Hidden Word is %i characters long, try again!"), HiddenWord.Len());
+    }
+    else if (!IsIsogram(HiddenWord)) 
+    {
+        PrintLine(TEXT("No repeating letters, guess again!"));
     }
     else
     {
-        --Lives;
-        if (Lives > 0) {
-            if (Guess.Len() != HiddenWord.Len())
-            {
-                PrintLine(TEXT("The Hidden Word is %i characters long, try again!"), HiddenWord.Len());
-            }
-            else
-            {
-                PrintLine(TEXT("Sorry, try again!"));
-            }
-            PrintLine(TEXT("You have %i lives remaining."), Lives);
-        }
-        else
-        {
-            PrintLine(TEXT("You have lost!."));
-            EndGame();
-        }
+        PrintLine(TEXT("Sorry, try again!"));
     }
+    
+    --Lives;
+    if (Lives <= 0)
+    {
+        EndGame();
+        return;
+    }
+    PrintLine(TEXT("You have %i lives remaining."), Lives);
 }
 
 void UBullCowCartridge::EndGame()
 {
+    if (Lives <= 0) 
+    {
+        PrintLine(TEXT("Game over!."));
+        PrintLine(TEXT("The hidden word was: %s"), *HiddenWord);
+    }
     bGameOver = true;
     PrintLine(TEXT("Press enter to play again."));
+}
+
+bool UBullCowCartridge::IsIsogram(const FString& Word) const
+{
+    for (int i = 0; i < Word.Len() - 1; i++)
+    {
+        for (int j = i + 1; j < Word.Len(); j++)
+        {
+            if (Word[i] == Word[j])
+            {
+                return false;
+            }
+        }
+    }
+    return true;
 }
