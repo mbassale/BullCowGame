@@ -20,6 +20,8 @@ void UBullCowCartridge::SetupGame()
     bGameOver = false;
 
     PrintLine(TEXT("Guess the %i letters word!"), HiddenWord.Len());
+    PrintLine(TEXT("You have %i Lives"), Lives);
+    PrintLine(TEXT("Press WASD and your mouse to explore this level."));
     PrintLine(TEXT("Press tab to activate terminal and type guesses."));
 }
 
@@ -32,32 +34,37 @@ void UBullCowCartridge::OnInput(const FString& Input) // When the player hits en
         ClearScreen();
         SetupGame();
     } 
-    else {
-        if (Input == HiddenWord)
-        {
-            PrintLine(TEXT("You have Won!"));
-            EndGame();
-        }
-        else
-        {
-            if (Input.Len() != HiddenWord.Len())
+    else 
+    {
+        ProcessGuess(Input);
+    }
+}
+
+void UBullCowCartridge::ProcessGuess(FString Guess)
+{
+    if (Guess == HiddenWord)
+    {
+        PrintLine(TEXT("You have Won!"));
+        EndGame();
+    }
+    else
+    {
+        --Lives;
+        if (Lives > 0) {
+            if (Guess.Len() != HiddenWord.Len())
             {
                 PrintLine(TEXT("The Hidden Word is %i characters long, try again!"), HiddenWord.Len());
             }
-            else 
+            else
             {
-                PrintLine(TEXT("Wrong Guess. Try again!"));
+                PrintLine(TEXT("Sorry, try again!"));
             }
-            --Lives;
-            if (Lives == 0)
-            {
-                PrintLine(TEXT("You have lost!."));
-                EndGame();
-            }
-            else 
-            {
-                PrintLine(TEXT("Lives Left: %i"), Lives);
-            }
+            PrintLine(TEXT("You have %i lives remaining."), Lives);
+        }
+        else
+        {
+            PrintLine(TEXT("You have lost!."));
+            EndGame();
         }
     }
 }
